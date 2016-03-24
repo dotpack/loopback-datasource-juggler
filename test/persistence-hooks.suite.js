@@ -2081,15 +2081,6 @@ module.exports = function(dataSource, should, connectorCapabilities) {
       describe.skip('replaceById - not implemented', function(){});
     } else {
       describe('PersistedModel.replaceOrCreate', function() {
-        var isOldMongo;
-        before(function() {
-          if (dataSource.connector.name === 'mongodb' && 
-                  process.env.MONGODB_VERSION && 
-                  !semver.satisfies(process.env.MONGODB_VERSION, '~2.6.0')) {
-            isOldMongo = true;
-          }
-        });
-        
         it('triggers hooks in the correct order on create', function(done) {
           monitorHookExecution();
 
