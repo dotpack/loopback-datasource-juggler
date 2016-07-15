@@ -162,8 +162,48 @@ module.exports = function(dataSource, should, connectorCapabilities) {
                 extra: 'hook data',
               },
               isNewInstance: false,
+              last: true,
               options: {},
             }));
+            done();
+          });
+      });
+
+      it('applies updates from `loaded` hook - lastExtra', function(done) {
+        TestModel.observe('loaded', ctxRecorder.recordAndNext(function(ctx) {
+          ctx.instance.extra = 'hook data';
+          ctx.instance.lastExtra = ctx.last;
+        }));
+
+        TestModel.find(
+          { where: { id: { inq: [1, 2] }}, order: 'id desc' },
+          function(err, list) {
+            if (err) return done(err);
+
+            ctxRecorder.records.should.eql([
+              aCtxForModel(TestModel, {
+                instance: {
+                  id: '2',
+                  name: 'second',
+                  extra: 'hook data',
+                  lastExtra: false,
+                },
+                isNewInstance: false,
+                last: false,
+                options: {},
+              }),
+              aCtxForModel(TestModel, {
+                instance: {
+                  id: '1',
+                  name: 'first',
+                  extra: 'hook data',
+                  lastExtra: true,
+                },
+                isNewInstance: false,
+                last: true,
+                options: {},
+              }),
+            ]);
             done();
           });
       });
@@ -2026,6 +2066,7 @@ module.exports = function(dataSource, should, connectorCapabilities) {
                     extra: null,
                   },
                   isNewInstance: false,
+                  last: true,
                   options: { notify: false },
                 }),
                 aCtxForModel(TestModel, {
